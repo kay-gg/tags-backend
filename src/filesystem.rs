@@ -42,6 +42,17 @@ impl Filesystem {
 			}
 		}
 	}
+	fn remove_tags_from_file(&mut self, mut tags_vec: Vec<String>) {
+		let path = tags_vec.remove(0);
+
+		for t in tags_vec {
+			if let Some(tag) = self.tags.get_mut(&t) {
+				tag.remove_file(&path);
+			} else {
+				println!("Tag: {} not found.", t);
+			}
+		}
+	}
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -143,6 +154,28 @@ mod filesystem_tests {
 		let _ = test.create_tag("test1");
 		let _ = test.create_tag("test2");
 		test.add_tags_to_file(vec!["./test".to_string() ,"test1".to_string(), "test2".to_string()]);
+
+		assert_eq!(filesystem, test);
+	}
+
+	#[test]
+	fn removing_tags_from_f() {
+		let mut filesystem = Filesystem::new();
+		let _ = filesystem.create_tag("test1");
+		let _ = filesystem.create_tag("test2");
+		// add test1 tag
+		filesystem.add_tags_to_file(vec!["./test".to_string(), "test1".to_string()]);
+	
+		let mut test = Filesystem::new();
+		let _ = test.create_tag("test1");
+		let _ = test.create_tag("test2");
+		let test_vec = vec!["./test".into(), "test1".to_string(), "test2".to_string()];
+		let test_vec2 = vec!["./test".into(), "test2".to_string()];
+		// add test1,test2 tags
+		test.add_tags_to_file(test_vec);
+		// remove test2 tag
+		// left with test1 tag only.
+		test.remove_tags_from_file(test_vec2);
 
 		assert_eq!(filesystem, test);
 	}
