@@ -66,7 +66,8 @@ mod filesystem_tests {
 	fn creating_two_same_tags() {
 		let mut f = Filesystem::new();
 		f.create_tag("test");
-		todo!();
+
+		
 	}
 }
 
@@ -97,6 +98,7 @@ mod tag_tests{
 	fn adding_file_twice() {
 		let mut tag = Tag::new();
 		let abs = PathBuf::from("./test/").canonicalize().unwrap();
+
 		tag.files.insert(abs.file_name().unwrap().to_owned(), abs);
 
 		let mut test = Tag::new();
