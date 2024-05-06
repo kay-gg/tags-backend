@@ -61,6 +61,13 @@ impl Tag {
 
 		self.files.insert(filename, absolute_path);
 	}
+	
+	fn remove_file(&mut self, path: &str) {
+		let absolute_path = PathBuf::from(path).canonicalize().unwrap();
+		let filename = absolute_path.file_name().unwrap().to_owned();
+
+		let _ = self.files.remove(&filename);
+	}
 }
 
 #[cfg(test)]
@@ -165,6 +172,33 @@ mod tag_tests{
 		let mut test = Tag::new();
 		test.add_file("./test");
 		test.add_file("./test");
+
+		assert_eq!(tag, test);
+	}
+
+	#[test]
+	fn removing_file() {
+		let mut tag = Tag::new();
+		tag.add_file("./test");
+
+		let mut test = Tag::new();
+		test.add_file("./test");
+		test.add_file("./test2");
+		test.remove_file("./test2");
+
+		assert_eq!(tag, test);
+	}
+	#[test]
+	fn removing_file_twice() {
+		let mut tag = Tag::new();
+		tag.add_file("./test");
+
+		let mut test = Tag::new();
+		test.add_file("./test");
+		test.add_file("./test2");
+
+		test.remove_file("./test2");
+		test.remove_file("./test2");
 
 		assert_eq!(tag, test);
 	}
