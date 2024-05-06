@@ -56,17 +56,24 @@ impl Tag {
 	}
 	
 	fn add_file(&mut self, path: &str) {
-		let absolute_path = PathBuf::from(path).canonicalize().unwrap();
-		let filename = absolute_path.file_name().unwrap().to_owned();
+		let absolute_path = Tag::get_abs_path(path);
+		let filename = Tag::get_filename(&absolute_path);
 
 		self.files.insert(filename, absolute_path);
 	}
 	
 	fn remove_file(&mut self, path: &str) {
-		let absolute_path = PathBuf::from(path).canonicalize().unwrap();
-		let filename = absolute_path.file_name().unwrap().to_owned();
+		let filename = Tag::get_abs_path(path);
+		let filename = Tag::get_filename(&filename);
 
 		let _ = self.files.remove(&filename);
+	}
+
+	fn get_abs_path(path: &str) -> PathBuf {
+		return PathBuf::from(path).canonicalize().unwrap();
+	}
+	fn get_filename(pathbuf: &PathBuf) -> OsString {
+		return pathbuf.file_name().unwrap().to_owned();
 	}
 }
 
