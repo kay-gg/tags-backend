@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ffi::OsString, path::{Path, PathBuf}};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -23,17 +23,20 @@ impl Filesystem {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Tag {
-	files: Vec<String>,
+	files: HashMap<OsString, PathBuf>,
 }
 impl Tag {
 	/// Returns an empty Tag
 	fn new() -> Tag {
-		let t = Tag {files: Vec::new()};
+		let t: Tag = Tag {files: HashMap::new()};
 		return t;
 	}
 	
 	fn add_file(&mut self, path: &str) {
-		self.files.push(path.to_string());
+		let absolute_path = PathBuf::from(path).canonicalize().unwrap();
+		let filename = absolute_path.file_name().unwrap().to_owned();
+
+		self.files.insert(filename, absolute_path);
 	}
 }
 
@@ -63,6 +66,7 @@ mod filesystem_tests {
 	fn creating_two_same_tags() {
 		let mut f = Filesystem::new();
 		f.create_tag("test");
+		todo!();
 	}
 }
 
@@ -72,7 +76,7 @@ mod tag_tests{
 
 	#[test]
 	fn empty_tag() {
-		let empty_tag = Tag {files: Vec::new()};
+		let empty_tag = Tag {files: HashMap::new()};
 
 		assert_eq!(empty_tag.files.is_empty(), Tag::new().files.is_empty());
 	}
@@ -80,11 +84,25 @@ mod tag_tests{
 	#[test]
 	fn adding_files_to_tag() {
 		let mut tag = Tag::new();
-		tag.files.push("test".to_string());
+		let abs = PathBuf::from("./test/").canonicalize().unwrap();
+		tag.files.insert(abs.file_name().unwrap().to_owned(), abs);
+
+		let mut test = Tag::new();
+		test.add_file("./test/");
+
+		assert_eq!(tag, test);
+	}
+
+	#[test]
+	fn adding_file_twice() {
+		let mut tag = Tag::new();
+		let abs = PathBuf::from("./test/").canonicalize().unwrap();
+		tag.files.insert(abs.file_name().unwrap().to_owned(), abs);
 
 		let mut test = Tag::new();
 		test.add_file("test");
-		
+		test.add_file("test");
+
 		assert_eq!(tag, test);
 	}
 }
