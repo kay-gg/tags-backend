@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ffi::OsString, io::ErrorKind, path::{Path, PathBuf}};
+use std::{collections::HashMap, ffi::OsString, io::ErrorKind, path::PathBuf};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -106,7 +106,7 @@ mod filesystem_tests {
 		filesystem.tags.insert("test".to_string(), Tag::new());
 
 		let mut test = Filesystem::new();
-		test.create_tag("test");
+		let _ = test.create_tag("test");
 
 		assert_eq!(filesystem, test);
 	}
