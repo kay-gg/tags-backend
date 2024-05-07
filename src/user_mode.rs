@@ -1,4 +1,4 @@
-use std::{env:: current_exe, fs::{self, metadata}, io::{self}, path::PathBuf};
+use std::{env:: current_exe, fs::{self, metadata}, io::{self, ErrorKind}, path::PathBuf};
 
 use crate::filesystem::Filesystem;
 
@@ -37,12 +37,22 @@ pub fn setup() {
 	}
 }
 
-pub fn add_tags(mut arguments: Vec<String>) {
-
+pub fn create_tag(arguments: Vec<String>) {
+	let mut fs = get_filesystem().expect("Filesystem not found.");
+	fs.create_tag(arguments[0].as_str()).expect("No tags inputed");
+	write_filesystem(fs).expect("Error writing filesystem.",);
 }
 
-pub fn remove_tags(mut arguments: Vec<String>) {
+pub fn add_tags(arguments: Vec<String>) {
+	let mut fs = get_filesystem().expect("Filesystem not found.");
+	fs.add_tags_to_file(arguments);
+	write_filesystem(fs).expect("Error writing filesystem.",);
+}
 
+pub fn remove_tags(arguments: Vec<String>) {
+	let mut fs = get_filesystem().expect("Filesystem not found.");
+	fs.remove_tags_from_file(arguments);
+	write_filesystem(fs).expect("Error writing filesystem.",);
 }
 
 pub fn remove_tags_all(mut arguments: Vec<String>) {
@@ -50,16 +60,17 @@ pub fn remove_tags_all(mut arguments: Vec<String>) {
 }
 /// Gets your Filesystem, if returned None, it couldnt find it, or something went wrong when deserializing.
 pub fn get_filesystem() -> Option<Filesystem> {
-	let metadata_path = get_metadata_path();
+	let metadata_path = path_to_metadata();
 
 	// check if metadata exists
 	if let Err(feeez) = metadata(&metadata_path) {
 		return None;
 	}
-	let tags_path = get_tags_path(&metadata_path);
+	let tags_path = path_to_tags(&metadata_path);
 
 	let tags = fs::read_to_string(tags_path);
 	if let Err(error) = tags {
+		panic!("Error reading from .tags_metadata");
 		return None;
 	}
 	let tags = tags.unwrap();
@@ -69,8 +80,17 @@ pub fn get_filesystem() -> Option<Filesystem> {
 	}
 }
 
+fn write_filesystem(fs: Filesystem) -> Result<(), std::io::Error>{
+	let fs_string = serde_json::to_string_pretty::<Filesystem>(&fs).expect("serde error");
+	
+	let metadata_path = path_to_metadata();
+	let tags_path = path_to_tags(&metadata_path);
+
+	return fs::write(tags_path, fs_string);
+}
+
 /// Metadata must be stored in the same folder as the exe
-fn get_metadata_path() -> PathBuf {
+fn path_to_metadata() -> PathBuf {
 	let mut metadata_path: PathBuf = current_exe().unwrap();
 	metadata_path.pop();
 	metadata_path.push(".tags_meta");
@@ -79,8 +99,9 @@ fn get_metadata_path() -> PathBuf {
 }
 
 /// tags path is stored in the .tags_meta file
-fn get_tags_path(metadata_path: &PathBuf) -> PathBuf{
+fn path_to_tags(metadata_path: &PathBuf) -> PathBuf{
 	let tags_path = fs::read_to_string(metadata_path).unwrap();
+	let tags_path = tags_path.trim();
 	let tags_path = PathBuf::from(tags_path);
 
 	return tags_path;

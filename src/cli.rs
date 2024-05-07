@@ -6,11 +6,9 @@ pub fn help() {
 }
 
 pub fn user_mode(mut arguments: Vec<String>) {
-	//arguments.remove(0);
-	
 	match arguments.remove(0).as_str() {
-
 		"-S" => user_mode::setup(),
+		"-ct" => user_mode::create_tag(arguments),
 		"-at" => user_mode::add_tags(arguments),
 		"-rt" => user_mode::remove_tags(arguments),
 		"-rta" => user_mode::remove_tags_all(arguments),

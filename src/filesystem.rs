@@ -80,20 +80,15 @@ impl Tag {
 		let _ = self.files.remove(&filename);
 	}
 
+	// paths only work with / seperators.... might be a problem but is working for rn
 	fn get_abs_path(path: &str) -> String {
 		return PathBuf::from(path).canonicalize().unwrap().display().to_string();
 	}
 	fn get_filename(path: &str) -> String {
 		let x: Vec<&str> = path.split("/").collect();
-		return String::from(x.last().unwrap().to_owned());
-		// if let Some(i) = path.rfind("/") {
-		// 	return String::from(&path[i..]);
-		// } else if let Some(i) = path.rfind(r#"\"#) {
-		// 	return String::from(&path[i..]);
-		// } else {
-		// 	let i = path.rfind("\\\\").unwrap();
-		// 	return String::from(&path[i..]);
-		// }
+		let x = x.last().unwrap().to_owned();
+
+		return String::from(x);
 	}
 }
 
