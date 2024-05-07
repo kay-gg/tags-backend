@@ -15,7 +15,7 @@ impl Filesystem {
 	}
 
 	/// Adds a ```Tag``` with ```name``` to the ```Filesystem```
-	fn create_tag(&mut self, name: &str) -> Result<(), ErrorKind> {
+	pub fn create_tag(&mut self, name: &str) -> Result<(), ErrorKind> {
 		match self.tags.contains_key(name) {
 			false => {
 				let t: Tag = Tag::new();
@@ -29,7 +29,7 @@ impl Filesystem {
 	/// 
 	/// name is misleading because we arent actually adding tags to the files itself,
 	/// but it sounds nicer this way. on the fence about changing
-	fn add_tags_to_file(&mut self, mut tags_vec: Vec<String>) {
+	pub fn add_tags_to_file(&mut self, mut tags_vec: Vec<String>) {
 		// path is 0, for example
 		// {path} {tag1} ... {tagn}
 		let path = tags_vec.remove(0);
@@ -42,7 +42,7 @@ impl Filesystem {
 			}
 		}
 	}
-	fn remove_tags_from_file(&mut self, mut tags_vec: Vec<String>) {
+	pub fn remove_tags_from_file(&mut self, mut tags_vec: Vec<String>) {
 		let path = tags_vec.remove(0);
 
 		for t in tags_vec {
