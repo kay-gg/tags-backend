@@ -53,6 +53,18 @@ impl Filesystem {
 			}
 		}
 	}
+	pub fn untag_file(&mut self, tags_vec: Vec<String>) {
+		// this is ugly
+
+		// for each tag
+		for t in self.tags.iter_mut() {
+			// if tag has key
+			if t.1.files.contains_key(&Tag::get_filename(&tags_vec[0])) {
+				// remove
+				t.1.remove_file(&tags_vec[0]);
+			}
+		}
+	}
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -80,10 +92,11 @@ impl Tag {
 	}
 
 	// paths only work with / seperators.... might be a problem but is working for rn
+	// might want to find a way to make this not use a PathBuf.display() bc it doesnt look good in tags file
 	fn get_abs_path(path: &str) -> String {
 		return PathBuf::from(path).canonicalize().unwrap().display().to_string();
 	}
-	fn get_filename(path: &str) -> String {
+	pub fn get_filename(path: &str) -> String {
 		let x: Vec<&str> = path.split("/").collect();
 		let x = x.last().unwrap().to_owned();
 
@@ -179,6 +192,21 @@ mod filesystem_tests {
 		// remove test2 tag
 		// left with test1 tag only.
 		test.remove_tags_from_file(test_vec2);
+
+		assert_eq!(filesystem, test);
+	}
+
+	#[test]
+	fn removing_all_tags_from_f() {
+		let mut filesystem = Filesystem::new();
+		let _ = filesystem.create_tag("test1");
+		let _ = filesystem.create_tag("test2");
+
+		let mut test = Filesystem::new();
+		let _ = test.create_tag("test1");
+		let _ = test.create_tag("test2");
+		test.add_tags_to_file(vec!["./test".into(), "test1".to_string(), "test2".to_string()]);
+		test.untag_file(vec!["./test".into()]);
 
 		assert_eq!(filesystem, test);
 	}

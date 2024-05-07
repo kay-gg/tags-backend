@@ -55,7 +55,10 @@ pub fn remove_tags(arguments: Vec<String>) {
 	write_filesystem(fs).expect("Error writing filesystem.",);
 }
 
-pub fn remove_tags_all(mut arguments: Vec<String>) {
+pub fn untag(arguments: Vec<String>) {
+	let mut fs = get_filesystem().expect("Filesystem not found.");
+	fs.untag_file(arguments);
+	write_filesystem(fs).expect("Error writing filesystem.",);
 	
 }
 /// Gets your Filesystem, if returned None, it couldnt find it, or something went wrong when deserializing.

@@ -11,7 +11,7 @@ pub fn user_mode(mut arguments: Vec<String>) {
 		"-ct" => user_mode::create_tag(arguments),
 		"-at" => user_mode::add_tags(arguments),
 		"-rt" => user_mode::remove_tags(arguments),
-		"-rta" => user_mode::remove_tags_all(arguments),
+		"-ut" => user_mode::untag(arguments),
 		_ => unimplemented!(),
 	}
 }
