@@ -1,4 +1,4 @@
-use std::{env:: current_exe, fs::{self, metadata}, io::{self, ErrorKind}, path::PathBuf};
+use std::{env:: current_exe, fs::{self, metadata}, io::{self}, path::PathBuf};
 
 use crate::filesystem::Filesystem;
 
@@ -63,15 +63,14 @@ pub fn get_filesystem() -> Option<Filesystem> {
 	let metadata_path = path_to_metadata();
 
 	// check if metadata exists
-	if let Err(feeez) = metadata(&metadata_path) {
+	if let Err(_feeez) = metadata(&metadata_path) {
 		return None;
 	}
 	let tags_path = path_to_tags(&metadata_path);
 
 	let tags = fs::read_to_string(tags_path);
-	if let Err(error) = tags {
+	if let Err(_error) = tags {
 		panic!("Error reading from .tags_metadata");
-		return None;
 	}
 	let tags = tags.unwrap();
 	match serde_json::from_str::<Filesystem>(&tags) {

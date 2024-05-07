@@ -74,7 +74,6 @@ impl Tag {
 	}
 	
 	fn remove_file(&mut self, path: &str) {
-		let filename = Tag::get_abs_path(&path);
 		let filename = Tag::get_filename(&path);
 
 		let _ = self.files.remove(&filename);
