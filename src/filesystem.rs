@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ffi::OsString, io::ErrorKind, path::PathBuf};
+use std::{collections::HashMap, io::ErrorKind, path::PathBuf};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -57,7 +57,7 @@ impl Filesystem {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Tag {
-	files: HashMap<OsString, PathBuf>,
+	files: HashMap<String, String>,
 }
 impl Tag {
 	/// Returns an empty Tag
@@ -67,24 +67,33 @@ impl Tag {
 	}
 	
 	fn add_file(&mut self, path: &str) {
-		let absolute_path = Tag::get_abs_path(path);
-		let filename = Tag::get_filename(&absolute_path);
+		let absolute_path = Tag::get_abs_path(&path);
+		let filename = Tag::get_filename(&path);
 
 		self.files.insert(filename, absolute_path);
 	}
 	
 	fn remove_file(&mut self, path: &str) {
-		let filename = Tag::get_abs_path(path);
-		let filename = Tag::get_filename(&filename);
+		let filename = Tag::get_abs_path(&path);
+		let filename = Tag::get_filename(&path);
 
 		let _ = self.files.remove(&filename);
 	}
 
-	fn get_abs_path(path: &str) -> PathBuf {
-		return PathBuf::from(path).canonicalize().unwrap();
+	fn get_abs_path(path: &str) -> String {
+		return PathBuf::from(path).canonicalize().unwrap().display().to_string();
 	}
-	fn get_filename(pathbuf: &PathBuf) -> OsString {
-		return pathbuf.file_name().unwrap().to_owned();
+	fn get_filename(path: &str) -> String {
+		let x: Vec<&str> = path.split("/").collect();
+		return String::from(x.last().unwrap().to_owned());
+		// if let Some(i) = path.rfind("/") {
+		// 	return String::from(&path[i..]);
+		// } else if let Some(i) = path.rfind(r#"\"#) {
+		// 	return String::from(&path[i..]);
+		// } else {
+		// 	let i = path.rfind("\\\\").unwrap();
+		// 	return String::from(&path[i..]);
+		// }
 	}
 }
 
@@ -195,11 +204,11 @@ mod tag_tests{
 	#[test]
 	fn adding_file_to_tag() {
 		let mut tag = Tag::new();
-		let abs = PathBuf::from("./test/").canonicalize().unwrap();
-		tag.files.insert(abs.file_name().unwrap().to_owned(), abs);
+		let abs = PathBuf::from("./test").canonicalize().unwrap().display().to_string();
+		tag.files.insert("test".into(), abs);
 
 		let mut test = Tag::new();
-		test.add_file("./test/");
+		test.add_file("./test");
 
 		assert_eq!(tag, test);
 	}

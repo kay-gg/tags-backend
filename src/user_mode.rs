@@ -1,4 +1,4 @@
-use std::{env::{current_dir, current_exe}, fs::{self, metadata}, io::{self, Read}, path::PathBuf};
+use std::{env:: current_exe, fs::{self, metadata}, io::{self}, path::PathBuf};
 
 use crate::filesystem::Filesystem;
 
@@ -11,16 +11,15 @@ pub fn setup() {
 	println!("Path to store tags at:");
 	let mut tags_path = String::new();
 	match io::stdin().read_line(&mut tags_path) {
-		Ok(okthumbsup) => {},
-		Err(e) => panic!("Error reading input"),
+		Ok(_okthumbsup) => {},
+		Err(e) => panic!("Error reading input: {}", e),
 	}
 
-	let mut tags_pathbuf = PathBuf::from(&tags_path.trim());
+	let tags_pathbuf = PathBuf::from(&tags_path.trim());
 	if tags_pathbuf.is_dir() {
 		println!("{}", colored(255, 0, 0, "ERROR: path is a directory. Nothing written."));
 		return;
 	}
-	//tags_pathbuf.push("tags");
 	let meta_path: PathBuf = {
 		let mut x: PathBuf = current_exe().unwrap();
 		x.pop();
@@ -31,17 +30,8 @@ pub fn setup() {
 	fs::write(&meta_path, tags_path).expect("error writing .tags_meta");
 	println!("{} {}", colored(36, 140, 54, ".tags_meta written to:"), meta_path.display());
 
-	let mut fs = Filesystem::new();
-	// testing. remove __________________________________________________________________________________________
-	fs.create_tag("art");
-	fs.create_tag("videos");
-	fs.create_tag("music");
-
-	// this is crashing bc of OsString and PathBuf arent strings/convertable.
-	// fs.add_tags_to_file(vec!["./test".to_string(), "art".to_string()]);
-	// fs.add_tags_to_file(vec!["./test2".to_string(), "music".to_string(), "videos".to_string()]);
-	// __________________________________________________________________________________________________________
-	let serialized = serde_json::to_string(&fs).unwrap();
+	let fs = Filesystem::new();
+	let serialized = serde_json::to_string_pretty(&fs).unwrap();
 	if let Ok(()) = fs::write(&tags_pathbuf, serialized) {
 		println!("{} {}", colored(36, 140, 54, "Filesystem written to"), tags_pathbuf.display());
 	}
