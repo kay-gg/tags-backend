@@ -6,7 +6,7 @@ pub fn help() {
 }
 
 pub fn user_mode(mut arguments: Vec<String>) {
-	arguments.remove(0);
+	//arguments.remove(0);
 	
 	match arguments.remove(0).as_str() {
 

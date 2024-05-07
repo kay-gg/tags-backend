@@ -2,12 +2,12 @@ use std::{collections::HashMap, ffi::OsString, io::ErrorKind, path::PathBuf};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-struct Filesystem {
+pub struct Filesystem {
 	tags: HashMap<String, Tag>,
 }
 impl Filesystem {
 	/// Creates a ```Filesystem``` with no ```Tag```s
-	fn new() -> Filesystem {
+	pub fn new() -> Filesystem {
 		let h: HashMap<String, Tag> = HashMap::new();
 		let f: Filesystem = Filesystem {tags: h};
 
