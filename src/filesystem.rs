@@ -27,11 +27,11 @@ impl Filesystem {
 	}
 	/// Adds file to each tag in ```tags```
 	/// 
-	/// name is misleading because we arent actually adding tags to the files itself,
-	/// but it sounds nicer this way. on the fence about changing
+	/// path is 0, for example
+	/// {path} {tag1} ... {tagn}
 	pub fn add_tags_to_file(&mut self, mut tags_vec: Vec<String>) {
-		// path is 0, for example
-		// {path} {tag1} ... {tagn}
+	// name is misleading because we arent actually adding tags to the files itself,
+	// but it sounds nicer this way. on the fence about changing
 		let path = tags_vec.remove(0);
 
 		for t in tags_vec {
@@ -42,6 +42,10 @@ impl Filesystem {
 			}
 		}
 	}
+	/// Removes file to each tag in ```tags```
+	/// 
+	/// path is 0, for example
+	/// {path} {tag1} ... {tagn}
 	pub fn remove_tags_from_file(&mut self, mut tags_vec: Vec<String>) {
 		let path = tags_vec.remove(0);
 
@@ -53,6 +57,7 @@ impl Filesystem {
 			}
 		}
 	}
+	/// Removes all tags from a file
 	pub fn untag_file(&mut self, tags_vec: Vec<String>) {
 		// this is ugly
 
@@ -60,15 +65,29 @@ impl Filesystem {
 		for t in self.tags.iter_mut() {
 			// if tag has key
 			if t.1.files.contains_key(&Tag::get_filename(&tags_vec[0])) {
-				// remove
 				t.1.remove_file(&tags_vec[0]);
 			}
 		}
 	}
+	/// Takes tags to filter by, ```tags_vec```,
+	/// 
+	/// Removes files from each tag that are not in all tags
+	/// 
+	/// Returns a Tag containing all of those files
+	pub fn filter(&self, tags_vec: Vec<String>) -> Tag {
+		let intersection = Tag::new();
+		let hashmap: HashMap<String, i32> = HashMap::new();
+
+		// confirm tags exist in Filesystem
+		
+		// add to hashmap, if 
+
+		return intersection;
+	}
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-struct Tag {
+pub struct Tag {
 	files: HashMap<String, String>,
 }
 impl Tag {
@@ -209,6 +228,45 @@ mod filesystem_tests {
 		test.untag_file(vec!["./test".into()]);
 
 		assert_eq!(filesystem, test);
+	}
+
+	#[test]
+	fn filtering_one_tag() {
+		let mut tag = Tag::new();
+		tag.add_file("./test");
+
+		let mut test = Filesystem::new();
+		let _ = test.create_tag("tag1");
+		let _ = test.add_tags_to_file(vec!["./test".into(), "tag1".into()]); 
+		let test_tag = test.filter(vec!["./test".into()]);
+
+		assert_eq!(tag, test_tag);
+	}
+
+	/// tag1 = {test, 	test2}
+	/// 
+	/// tag2 = {test, 	_}
+	/// 
+	/// tag3 = {_, 		test2}
+	/// 
+	/// files that are in both tag1 and tag2 is test.
+	#[test]
+	fn filtering_twoplus_tags() {
+		let mut tag = Tag::new();
+		tag.add_file("./test");		
+
+
+		let mut test = Filesystem::new();
+		let _ = test.create_tag("tag1");
+		let _ = test.create_tag("tag2");
+		let _ = test.create_tag("tag3");
+
+		let _ = test.add_tags_to_file(vec!["./test".into(), "tag1".into(), "tag2".into()]);
+		let _ = test.add_tags_to_file(vec!["./test2".into(), "tag1".into(), "tag3".into()]);
+
+		let test = test.filter(vec!["tag1".into(), "tag2".into()]);
+
+		assert_eq!(tag, test);
 	}
 }
 
