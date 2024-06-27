@@ -1,5 +1,5 @@
 # tags-backend
-This is my CLI for my file tagging project. It handles the actual mutating of the file that contains all of your tags.
+This is my CLI for my file tagging project. It handles the actual mutating of the file that contains all of your tags, along with giving the frontend the things it needs to display.
 
 # How to use
 ### User Mode
@@ -51,3 +51,12 @@ The basic frontend. no filtering, just every file.
 ```
 -F
 ```
+
+#### Filtering files by tag(s)
+(Frontend filter (by) tag)
+If more than one tag, should only show files that have both tags
+
+```
+-F -ft {tag} ... {tag}
+```
+-F -ft tag1 tag2 poopoo
