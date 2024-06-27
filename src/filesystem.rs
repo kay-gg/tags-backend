@@ -146,7 +146,7 @@ impl Tag {
 }
 
 #[cfg(test)]
-mod filesystem_tests {
+mod fs_tests {
 	use super::*;
 
 	#[test]
