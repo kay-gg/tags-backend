@@ -74,15 +74,37 @@ impl Filesystem {
 	/// Removes files from each tag that are not in all tags
 	/// 
 	/// Returns a Tag containing all of those files
-	pub fn filter(&self, tags_vec: Vec<String>) -> Tag {
-		let intersection = Tag::new();
-		let hashmap: HashMap<String, i32> = HashMap::new();
+	pub fn filter(&self, tags_vec: Vec<String>) -> Result<Tag, ErrorKind> {
+		let mut intersection = Tag::new();
+		let mut hashmap: HashMap<&String, i32> = HashMap::new();
 
 		// confirm tags exist in Filesystem
-		
-		// add to hashmap, if 
+		for tags in tags_vec.iter() {
+			if let None = self.tags.get(tags) {
+				return Err(ErrorKind::NotFound);
+			}
+		}
+		// add to hashmap
+		// hashmap contains <files, numbers of times files added>
+		for tags in tags_vec.iter() {
+			let tag_in_fs = self.tags.get(tags).unwrap();
+			for files in tag_in_fs.files.iter() {
+				if hashmap.contains_key(files.0) {
+					let key = hashmap.get_mut(files.0).unwrap();
+					*key += 1;
+				} else {
+					hashmap.insert(files.0, 1);
+				}
+			}
+		}
+		// if number of times = number of tags, they intersect on all tags
+		for files in hashmap {
+			if files.1 as usize == tags_vec.len() {
+				intersection.add_file(files.0);
+			}
+		}
 
-		return intersection;
+		return Ok(intersection);
 	}
 }
 
@@ -234,11 +256,15 @@ mod filesystem_tests {
 	fn filtering_one_tag() {
 		let mut tag = Tag::new();
 		tag.add_file("./test");
+		tag.add_file("./test2");
 
 		let mut test = Filesystem::new();
 		let _ = test.create_tag("tag1");
+
 		let _ = test.add_tags_to_file(vec!["./test".into(), "tag1".into()]); 
-		let test_tag = test.filter(vec!["./test".into()]);
+		let _ = test.add_tags_to_file(vec!["./test2".into(), "tag1".into()]);
+		
+		let test_tag = test.filter(vec!["tag1".into()]).unwrap();
 
 		assert_eq!(tag, test_tag);
 	}
@@ -264,7 +290,7 @@ mod filesystem_tests {
 		let _ = test.add_tags_to_file(vec!["./test".into(), "tag1".into(), "tag2".into()]);
 		let _ = test.add_tags_to_file(vec!["./test2".into(), "tag1".into(), "tag3".into()]);
 
-		let test = test.filter(vec!["tag1".into(), "tag2".into()]);
+		let test = test.filter(vec!["tag1".into(), "tag2".into()]).unwrap();
 
 		assert_eq!(tag, test);
 	}

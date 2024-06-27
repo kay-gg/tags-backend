@@ -13,7 +13,7 @@ pub fn user_mode(mut arguments: Vec<String>) {
 		"-rt" => user_mode::remove_tags(arguments),
 		"-ut" => user_mode::untag(arguments),
 		_ => unimplemented!(),
-	}
+	};
 }
 
 pub fn frontend_mode(mut arguments: Vec<String>) {
@@ -21,7 +21,11 @@ pub fn frontend_mode(mut arguments: Vec<String>) {
 
 	if arguments.is_empty() {
 		frontend_mode::give_full_filesystem();
-		
+		return;
 	}
+	match arguments.remove(0).as_str() {
+		"-ft" => frontend_mode::filter_tags(arguments),
+		_ => unimplemented!(),
+	};
 }
 
