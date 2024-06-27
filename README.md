@@ -4,14 +4,14 @@ This is my CLI for my file tagging project. It handles the actual mutating of th
 # How to use
 ### User Mode
 #### Setup mode
-Preforms first time setup
+Preforms first time setup.
 Should create a **.tags_meta** and **tags** file
 .tags_meta will hold the tags files path.
-tags file will hold your tags
+tags file will hold your tags.
 ```
 -S
 ```
-if they move **tags**, they will have to update the .tags_meta file
+if they move **tags**, they will have to update the .tags_meta file.
 #### Creating tag
 (create tag)
 
