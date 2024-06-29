@@ -1,6 +1,6 @@
 use std::{env:: current_exe, fs::{self, metadata}, io::{self}, path::PathBuf};
 
-use crate::filesystem::Filesystem;
+use tag_fs::Filesystem;
 
 pub fn setup() {
 	if let Some(_fs) = get_filesystem() {

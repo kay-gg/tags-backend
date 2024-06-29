@@ -3,7 +3,6 @@ use std::env::args;
 mod cli;
 mod frontend_mode;
 mod user_mode;
-mod filesystem;
 
 fn main() {
 	handle_args(args().collect());

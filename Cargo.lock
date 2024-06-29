@@ -80,6 +80,16 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "tag_fs",
+]
+
+[[package]]
+name = "tag_fs"
+version = "0.1.0"
+source = "git+https://github.com/kay-gg/tagging_fs#36efe5cc5bf818c7867cb6bacd65305f40128c74"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
