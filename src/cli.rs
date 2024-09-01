@@ -24,7 +24,6 @@ pub fn frontend_mode(mut arguments: Vec<String>) {
 		return;
 	}
 	match arguments.remove(0).as_str() {
-		"-ft" => frontend_mode::filter_tags(arguments),
 		_ => unimplemented!(),
 	};
 }
