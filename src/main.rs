@@ -10,8 +10,10 @@ fn main() {
 
 fn handle_args(mut arguments: Vec<String>) {
 	// on windows, the first argument is the path to the executable
-	// on linux, i believe it doesnt do this, dont know about other OS
 	if std::env::consts::OS == "windows" {
+		arguments.remove(0);
+	}
+	if std::env::consts::OS == "linux" {
 		arguments.remove(0);
 	}
 
